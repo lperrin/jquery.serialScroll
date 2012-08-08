@@ -37,7 +37,8 @@
 		step:1, // how many elements to scroll on each action
 		lock:true,// ignore events if already animating
 		cycle:true, // cycle endlessly ( constant velocity )
-		constant:true // use contant speed ?
+		constant:true, // use contant speed ?
+                wrap:true // clicking prev on first/last element scrolls to the last/first one
 		/*
 		navigation:null,// if specified, it's a selector to a collection of items to navigate the container
 		target:window, // if specified, it's a selector to the element to be scrolled.
@@ -64,6 +65,8 @@
 				// ditto
 				step = settings.step, 
 				// ditto
+                                wrap = settings.wrap,
+                                // ditto
 				lazy = settings.lazy, 
 				// if a target is specified, then everything's relative to 'this'.
 				context = settings.target ? this : document, 
@@ -144,6 +147,11 @@
 					jump( e, this );
 				});
 
+                        function checkDisableControls( pos, limit ){
+                                $(settings.prev).css('visibility', pos <= 0 ? 'hidden' : 'visible');
+                                $(settings.next).css('visibility', pos >= limit ? 'hidden' : 'visible');
+                        };
+
 			function move( e ){
 				e.data += active;
 				jump( e, this );
@@ -161,6 +169,9 @@
 					limit = $items.length - 1,
 					elem = $items[pos],
 					duration = settings.duration;
+
+                                if( !wrap )
+                                        checkDisableControls( pos, limit );
 
 				if( real )
 					e.preventDefault();
